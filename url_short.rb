@@ -6,10 +6,11 @@ require 'uri'
 
 class UrlShort < Sinatra::Base
   set :public_dir, File.dirname(__FILE__) + '/static'
-
+  
   def initialize
     super
-    @redis = Redis.new
+    uri = URI.parse(ENV['REDIS_CLOUD'])
+    @redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
   end
 
   helpers do
