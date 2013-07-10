@@ -1,0 +1,66 @@
+<head>
+  <title>url shortener</title>
+  <style>
+    body {
+      color: #660033;
+      font-family: "Palatino Linotype", "Book Antiqua", "Palatino", "serif";
+    }
+    #container {
+      width: 350px;
+      margin: 100px auto auto auto;
+    }
+    
+    #form {
+      display:block;
+      float: left;
+      width: 400px;
+    }
+
+    #url {
+      width: 200px;
+      height: 20px;
+    }
+
+    .submit {
+      width: 50px;
+      height: 20px;
+      border: none;
+      border-radius: 5px;
+      background: #ffffff
+      padding: 10px;
+    }
+
+    .submit:hover {
+      background: #660033
+    }
+
+    #result {
+      display:block;
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <form id="form" method="post">
+      <input type="text" value="" name="url" id="url"/>
+      <input type="submit" value="shorten" id="submit" class="submit"/>
+    </form>
+    <hr/>
+    <div class="mes">Result</div>
+    <% if @error %>
+      <div id='error'>
+        <%= @error %>
+      </div>
+    <% else %>
+      <% if @success %>
+        <a id="result" href='<%= "#{escape_html(url)}#{@hash}" %>'><%= "#{escape_html(url)}#{@hash}" %></a>
+        <input data-clipboard-text='<%="#{escape_html(url)}#{@hash}" %>' type="button" id="yank" class="submit" value="yank"/>
+      <% end %>  
+    <% end %>
+  </div>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+  <script type="text/javascript" src="ZeroClipboard.js"></script>
+  <script type="text/javascript" src="app.js"></script>
+</body>
+
