@@ -1,17 +1,17 @@
 require 'sinatra/base'
 require 'pry'
-require 'redis'
 require 'securerandom'
 require 'uri'
 
 class UrlShort < Sinatra::Base
   set :public_dir, File.dirname(__FILE__) + '/static'
   
-  def initialize
-    super
-    uri = URI.parse(ENV['REDIS_CLOUD'])
-    @redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
-  end
+  configure do
+    require 'redis'
+    uri = URI.parse(ENV["REDIS_CLOUD"])
+    p ENV["REDIS_CLOUD"]
+    $redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+  end 
 
   helpers do
     include Rack::Utils
@@ -38,11 +38,11 @@ class UrlShort < Sinatra::Base
       if params[:url] and not params[:url].empty?
         @url = params[:url]
         @hash = rand_base64(5)
-        exist = @redis.setnx "url:#{@url}", @hash
+        exist = $redis.setnx "url:#{@url}", @hash
         if exist #key not set
-          @redis.setnx "hash:#{@hash}", @url
+          $redis.setnx "hash:#{@hash}", @url
         else
-          @hash = @redis.get "url:#{@url}"
+          @hash = $redis.get "url:#{@url}"
         end
         @success = true
       end
@@ -52,7 +52,7 @@ class UrlShort < Sinatra::Base
   end
 
   get '/:hash' do
-    url = @redis.get "hash:#{params[:hash]}" 
+    url = $redis.get "hash:#{params[:hash]}" 
     redirect url
   end
 end
